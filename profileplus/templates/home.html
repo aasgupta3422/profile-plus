@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+    <div class="hero-text">
+        <p class="eyebrow">SMART RESUME • SMART CAREER</p>
+        <h1>Build your resume.<br><span>Plan your career.</span></h1>
+        <p class="hero-sub">Create a professional resume and get job, skill, career and interview assistance from one simple dashboard.</p>
+        <div class="hero-actions">
+            <a class="btn primary" href="{{ url_for('signup') }}">Get Started</a>
+            <a class="btn secondary" href="{{ url_for('login') }}">Login</a>
+        </div>
+    </div>
+    <div class="hero-card">
+        <div class="mini-profile">+</div>
+        <h3>Resume+ Assistant</h3>
+        <p>Resume Builder</p>
+        <p>Career Guidance</p>
+        <p>Job Recommendations</p>
+        <p>Interview Preparation</p>
+    </div>
+</section>
+
+<section class="features">
+    <h2>Everything you need in one place</h2>
+    <div class="grid four">
+        <div class="feature"><b>01</b><h3>Resume Builder</h3><p>Choose a template, enter details and export your resume.</p></div>
+        <div class="feature"><b>02</b><h3>Job Recommendations</h3><p>Find relevant jobs based on your skills and domain.</p></div>
+        <div class="feature"><b>03</b><h3>Skill Suggestions</h3><p>Compare your skills with career requirements.</p></div>
+        <div class="feature"><b>04</b><h3>Interview Prep</h3><p>Practice topic-wise questions and answers.</p></div>
+    </div>
+</section>
+{% endblock %}

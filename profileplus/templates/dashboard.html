@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="dashboard">
+    <div class="section-heading">
+        <p class="eyebrow">DASHBOARD</p>
+        <h1>Hello, {{ name }} 👋</h1>
+        <p>Choose what you want to work on.</p>
+    </div>
+
+    <div class="grid two">
+        <a class="dashboard-card blue" href="{{ url_for('resume') }}">
+            <span class="icon">CV</span>
+            <h2>Resume Builder</h2>
+            <p>Create, preview and download your professional resume.</p>
+            <span class="arrow">→</span>
+        </a>
+        <a class="dashboard-card green" href="{{ url_for('career') }}">
+            <span class="icon">AI</span>
+            <h2>Career Assistant</h2>
+            <p>Explore jobs, skills, career guidance and interview preparation.</p>
+            <span class="arrow">→</span>
+        </a>
+    </div>
+</section>
+{% endblock %}

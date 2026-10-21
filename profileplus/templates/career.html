@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page">
+    <div class="section-heading">
+        <p class="eyebrow">CAREER ASSISTANT</p>
+        <h1>Choose a Career Feature</h1>
+        <p>These are the four modules from your flowchart. The first version uses demo data; APIs/AI can be connected next.</p>
+    </div>
+
+    <div class="grid two">
+        <div class="tool-card">
+            <h2>💼 Job Recommendation</h2>
+            <input id="jobSkills" placeholder="e.g. Python, Java, SQL">
+            <button class="btn primary" onclick="demoJobs()">Find Jobs</button>
+            <div id="jobResult" class="result"></div>
+        </div>
+
+        <div class="tool-card">
+            <h2>📚 Skill Suggestions</h2>
+            <input id="careerGoal" placeholder="e.g. Data Scientist">
+            <button class="btn primary" onclick="suggestSkills()">Suggest Skills</button>
+            <div id="skillResult" class="result"></div>
+        </div>
+
+        <div class="tool-card">
+            <h2>🤖 Career Guidance</h2>
+            <textarea id="careerQuery" placeholder="Ask about a career path..."></textarea>
+            <button class="btn primary" onclick="careerGuide()">Get Guidance</button>
+            <div id="guideResult" class="result"></div>
+        </div>
+
+        <div class="tool-card">
+            <h2>🎯 Interview Preparation</h2>
+            <select id="domain">
+                <option>Java</option>
+                <option>Python</option>
+                <option>DSA</option>
+                <option>Web Development</option>
+            </select>
+            <button class="btn primary" onclick="interviewPrep()">Show Questions</button>
+            <div id="interviewResult" class="result"></div>
+        </div>
+    </div>
+</section>
+{% endblock %}

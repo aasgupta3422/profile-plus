@@ -89,8 +89,21 @@ def login():
     if request.method == "POST":
         email = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "")
+
         conn = db()
-        user = conn.execute("SELECT * FROM users WHERE email=?", (email,)).fetchone()
+        user = conn.execute(
+            "SELECT * FROM users WHERE email=?", (email,)
+        ).fetchone()
         conn.close()
+
         if user and check_password_hash(user["password"], password):
             session["user_email"] = user["email"]
+            session["user_name"] = user["name"]
+            return redirect(url_for("dashboard"))
+
+        return render_template(
+            "login.html",
+            error="Invalid email or password"
+        )
+
+    return render_template("login.html")

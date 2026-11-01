@@ -40,6 +40,9 @@ def init_db():
     conn.commit()
     conn.close()
 
+# Initialize database for both local execution and Gunicorn/Render startup.
+init_db()
+
 def login_required():
     return "user_email" in session
 
@@ -91,105 +94,3 @@ def login():
         conn.close()
         if user and check_password_hash(user["password"], password):
             session["user_email"] = user["email"]
-            session["user_name"] = user["name"]
-            return redirect(url_for("dashboard"))
-        flash("Invalid email or password.")
-    return render_template("login.html")
-
-@app.route("/logout")
-def logout():
-    session.clear()
-    return redirect(url_for("home"))
-
-@app.route("/dashboard")
-def dashboard():
-    if not login_required():
-        return redirect(url_for("login"))
-    return render_template("dashboard.html", name=session.get("user_name"))
-
-@app.route("/resume", methods=["GET", "POST"])
-def resume():
-    if not login_required():
-        return redirect(url_for("login"))
-    selected = "classic"
-    data = {}
-    preview = False
-    if request.method == "POST":
-        data = clean_resume_form(request.form)
-        selected = request.form.get("template", "classic")
-        if selected not in TEMPLATES:
-            selected = "classic"
-        preview = request.form.get("action") == "preview"
-    return render_template(
-        "resume.html", data=data, preview=preview,
-        templates=TEMPLATES, selected_template=selected
-    )
-
-@app.route("/resume/pdf", methods=["POST"])
-def resume_pdf():
-    if not login_required():
-        return redirect(url_for("login"))
-    data = clean_resume_form(request.form)
-    template_key = request.form.get("template", "classic")
-    if template_key not in TEMPLATES:
-        template_key = "classic"
-    accent = colors.HexColor(TEMPLATES[template_key]["color"])
-
-    buffer = BytesIO()
-    doc = SimpleDocTemplate(
-        buffer, pagesize=A4, rightMargin=42, leftMargin=42,
-        topMargin=40, bottomMargin=40
-    )
-    base = getSampleStyleSheet()
-    name_style = ParagraphStyle(
-        "ResumeName", parent=base["Title"], fontName="Helvetica-Bold",
-        fontSize=23, leading=27, textColor=accent, spaceAfter=5
-    )
-    role_style = ParagraphStyle(
-        "ResumeRole", parent=base["Normal"], fontSize=11,
-        leading=15, textColor=colors.HexColor("#4B5563"), spaceAfter=7
-    )
-    heading_style = ParagraphStyle(
-        "ResumeHeading", parent=base["Heading2"], fontName="Helvetica-Bold",
-        fontSize=11, leading=14, textColor=accent, spaceBefore=12, spaceAfter=4
-    )
-    body_style = ParagraphStyle(
-        "ResumeBody", parent=base["BodyText"], fontSize=9.5,
-        leading=13, spaceAfter=3
-    )
-    story = []
-    story.append(Paragraph(escape(data["name"] or "Your Name"), name_style))
-    if data["profession"]:
-        story.append(Paragraph(escape(data["profession"]), role_style))
-    contact = " | ".join(x for x in [
-        data["email"], data["phone"], data["location"], data["linkedin"],
-        data["github"], data["website"]
-    ] if x)
-    if contact:
-        story.append(Paragraph(escape(contact), body_style))
-    if data["summary"]:
-        story.append(Paragraph("PROFILE", heading_style))
-        story.append(Paragraph(escape(data["summary"]).replace("\n", "<br/>"), body_style))
-    for label, key in [
-        ("EDUCATION", "education"), ("SKILLS", "skills"),
-        ("PROJECTS", "projects"), ("EXPERIENCE", "experience"),
-        ("CERTIFICATIONS", "certifications"), ("LANGUAGES", "languages")
-    ]:
-        value = data.get(key, "")
-        if value:
-            story.append(Paragraph(label, heading_style))
-            story.append(Paragraph(escape(value).replace("\n", "<br/>"), body_style))
-    doc.build(story)
-    buffer.seek(0)
-    filename = (data["name"].strip().replace(" ", "_") or "resume") + "_resume.pdf"
-    return send_file(buffer, as_attachment=True, download_name=filename, mimetype="application/pdf")
-
-@app.route("/career")
-def career():
-    if not login_required():
-        return redirect(url_for("login"))
-    return render_template("career.html")
-
-if __name__ == "__main__":
-    init_db()
-    app.run(debug=True)

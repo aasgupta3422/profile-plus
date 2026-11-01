@@ -60,7 +60,8 @@ function interviewPrep(){
     event.preventDefault();
     overlay.classList.add("is-visible");
     overlay.setAttribute("aria-hidden", "false");
-    submitter.disabled = true;
+    // Keep the submit button enabled so its name/value (action=preview)
+    // is included in the second form submission. The overlay prevents repeat clicks.
     submitter.textContent = "Building your resume…";
 
     let stageIndex = 0;

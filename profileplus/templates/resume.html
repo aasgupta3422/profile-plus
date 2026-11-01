@@ -1,56 +1,118 @@
 {% extends "base.html" %}
 {% block content %}
 <section class="page">
-    <div class="section-heading">
-        <p class="eyebrow">RESUME BUILDER</p>
-        <h1>Create Your Resume</h1>
-        <p>Fill the required information. You can preview it before downloading.</p>
+  <div class="section-heading">
+    <p class="eyebrow">PROFILE+ RESUME STUDIO</p>
+    <h1>Build a resume that looks like you.</h1>
+    <p>Choose a design, add your details, preview it, then download a PDF.</p>
+  </div>
+
+  <form class="resume-builder-form" method="POST" action="{{ url_for('resume') }}">
+    <section class="template-picker">
+      <h2>1. Choose your template</h2>
+      <div class="template-grid">
+        {% for key, item in templates.items() %}
+        <label class="template-option">
+          <input type="radio" name="template" value="{{ key }}" {% if selected_template == key %}checked{% endif %}>
+          <span class="template-card template-{{ key }}">
+            <span class="mini-sheet">
+              <b>{{ item.name }}</b>
+              <i></i><i></i><i></i><i></i>
+              <small>PROFILE · EDUCATION · SKILLS</small>
+            </span>
+            <strong>{{ item.name }}</strong>
+            <small>{% if selected_template == key %}Selected{% else %}Select design{% endif %}</small>
+          </span>
+        </label>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="form-card">
+      <h2>2. Personal information</h2>
+      <div class="form-grid">
+        <div><label>Full name *</label><input name="name" value="{{ data.get('name','') }}" placeholder="e.g. Priya Sharma" required></div>
+        <div><label>Profession / Target role *</label><input name="profession" value="{{ data.get('profession','') }}" placeholder="e.g. Python Developer" required></div>
+        <div><label>Email *</label><input type="email" name="email" value="{{ data.get('email','') }}" placeholder="you@example.com" required></div>
+        <div><label>Phone *</label><input name="phone" value="{{ data.get('phone','') }}" placeholder="+91 98765 43210" required></div>
+        <div><label>City / Location</label><input name="location" value="{{ data.get('location','') }}" placeholder="Bhopal, India"></div>
+        <div><label>LinkedIn URL</label><input name="linkedin" value="{{ data.get('linkedin','') }}" placeholder="linkedin.com/in/yourname"></div>
+        <div><label>GitHub URL</label><input name="github" value="{{ data.get('github','') }}" placeholder="github.com/yourname"></div>
+        <div><label>Portfolio / Website</label><input name="website" value="{{ data.get('website','') }}" placeholder="yourportfolio.com"></div>
+      </div>
+
+      <label>Professional summary</label>
+      <textarea name="summary" rows="4" placeholder="Write 2–4 lines about your background, strengths and career goals.">{{ data.get('summary','') }}</textarea>
+
+      <label>Education *</label>
+      <textarea name="education" rows="3" required placeholder="Degree, college/university, year, CGPA or percentage">{{ data.get('education','') }}</textarea>
+
+      <label>Skills * <span class="field-hint">Separate skills with commas or new lines</span></label>
+      <textarea name="skills" rows="3" required placeholder="Python, C++, HTML, CSS, SQL, Communication">{{ data.get('skills','') }}</textarea>
+
+      <label>Projects</label>
+      <textarea name="projects" rows="4" placeholder="Project name — technologies used&#10;What you built and what you achieved.">{{ data.get('projects','') }}</textarea>
+
+      <label>Work experience / Internship</label>
+      <textarea name="experience" rows="4" placeholder="Role, company, dates and key responsibilities. Students can include relevant activities.">{{ data.get('experience','') }}</textarea>
+
+      <label>Certifications & achievements</label>
+      <textarea name="certifications" rows="3" placeholder="Certification — provider — year">{{ data.get('certifications','') }}</textarea>
+
+      <label>Languages</label>
+      <textarea name="languages" rows="2" placeholder="English, Hindi">{{ data.get('languages','') }}</textarea>
+
+      <div class="form-actions">
+        <button class="btn primary" type="submit" name="action" value="preview">Preview selected template</button>
+      </div>
+    </section>
+  </form>
+
+  {% if preview %}
+  <section class="preview-section">
+    <div class="preview-title">
+      <div><p class="eyebrow">3. YOUR RESUME</p><h2>Preview</h2></div>
+      <form method="POST" action="{{ url_for('resume_pdf') }}">
+        {% for key, value in data.items() %}
+          <input type="hidden" name="{{ key }}" value="{{ value }}">
+        {% endfor %}
+        <input type="hidden" name="template" value="{{ selected_template }}">
+        <button class="btn secondary" type="submit">Download PDF</button>
+      </form>
     </div>
 
-    <div class="resume-layout">
-        <form class="form-card" method="POST">
-            <h2>Personal Information</h2>
-            <div class="form-grid">
-                <div><label>Full Name *</label><input name="name" value="{{ data.get('name','') }}" required></div>
-                <div><label>Email *</label><input type="email" name="email" value="{{ data.get('email','') }}" required></div>
-                <div><label>Phone *</label><input name="phone" value="{{ data.get('phone','') }}" required></div>
-                <div><label>Education *</label><input name="education" value="{{ data.get('education','') }}" required></div>
-            </div>
-            <label>Skills *</label>
-            <textarea name="skills" required>{{ data.get('skills','') }}</textarea>
-            <label>Projects</label>
-            <textarea name="projects">{{ data.get('projects','') }}</textarea>
-            <label>Experience</label>
-            <textarea name="experience">{{ data.get('experience','') }}</textarea>
-            <label>Certifications</label>
-            <textarea name="certifications">{{ data.get('certifications','') }}</textarea>
-            <button class="btn primary">Generate Preview</button>
-        </form>
-
-        {% if preview %}
-        <div class="resume-preview">
-            <div class="paper">
-                <h1>{{ data.name }}</h1>
-                <p>{{ data.email }} | {{ data.phone }}</p>
-                <hr>
-                <h3>Education</h3><p>{{ data.education }}</p>
-                <h3>Skills</h3><p>{{ data.skills }}</p>
-                {% if data.projects %}<h3>Projects</h3><p>{{ data.projects }}</p>{% endif %}
-                {% if data.experience %}<h3>Experience</h3><p>{{ data.experience }}</p>{% endif %}
-                {% if data.certifications %}<h3>Certifications</h3><p>{{ data.certifications }}</p>{% endif %}
-            </div>
-            <form method="POST" action="{{ url_for('resume_pdf') }}">
-                {% for key, value in data.items() %}
-                    <input type="hidden" name="{{ key }}" value="{{ value }}">
-                {% endfor %}
-                <button class="btn secondary full">Download PDF</button>
-            </form>
-        </div>
+    <article class="resume-paper resume-{{ selected_template }}">
+      <header class="resume-header">
+        {% if selected_template == 'sidebar' %}
+        <aside class="resume-sidebar">
+          <div class="resume-monogram">{{ (data.name or 'YN')[:2]|upper }}</div>
+          <h1>{{ data.name }}</h1><p class="resume-role">{{ data.profession }}</p>
+          <h3>CONTACT</h3><p>{{ data.location }}<br>{{ data.phone }}<br>{{ data.email }}<br>{{ data.linkedin }}<br>{{ data.github }}</p>
+          <h3>SKILLS</h3><p>{{ data.skills }}</p>
+          {% if data.languages %}<h3>LANGUAGES</h3><p>{{ data.languages }}</p>{% endif %}
+        </aside>
         {% else %}
-        <div class="empty-preview">
-            <div class="paper-placeholder">Resume preview<br>will appear here</div>
+        <div>
+          <p class="resume-kicker">{% if selected_template == 'technical' %}PROFESSIONAL PROFILE{% elif selected_template == 'minimal' %}CURRICULUM VITAE{% elif selected_template == 'bold' %}PROFILE+ RESUME{% else %}PROFESSIONAL RESUME{% endif %}</p>
+          <h1>{{ data.name }}</h1><p class="resume-role">{{ data.profession }}</p>
+          <p class="resume-contact">{{ data.email }}{% if data.phone %} · {{ data.phone }}{% endif %}{% if data.location %} · {{ data.location }}{% endif %}<br>{{ data.linkedin }}{% if data.github %} · {{ data.github }}{% endif %}{% if data.website %} · {{ data.website }}{% endif %}</p>
         </div>
         {% endif %}
-    </div>
+      </header>
+      <div class="resume-content">
+        {% if selected_template != 'sidebar' %}
+          {% if data.summary %}<section><h2>{% if selected_template == 'bold' %}01 — {% endif %}PROFILE</h2><p>{{ data.summary }}</p></section>{% endif %}
+        {% endif %}
+        {% if selected_template == 'sidebar' and data.summary %}<section><h2>PROFILE</h2><p>{{ data.summary }}</p></section>{% endif %}
+        {% for label, key in [('EDUCATION','education'),('SKILLS','skills'),('PROJECTS','projects'),('EXPERIENCE','experience'),('CERTIFICATIONS','certifications'),('LANGUAGES','languages')] %}
+          {% if data.get(key) and not (selected_template == 'sidebar' and key == 'skills') %}
+          <section><h2>{{ label }}</h2><p class="resume-lines">{{ data.get(key) }}</p></section>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </article>
+    <p class="preview-note">Tip: Review spelling, dates, contact details and links before downloading or sharing your resume.</p>
+  </section>
+  {% endif %}
 </section>
 {% endblock %}

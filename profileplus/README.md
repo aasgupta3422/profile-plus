@@ -1,50 +1,43 @@
-# Resume+ Career Assistant
+# Profile+ — Resume Builder & Career Assistance
 
-A beginner-friendly Flask mini project based on the supplied flowchart.
+A Flask-based student project with account registration/login, a dashboard, a five-template resume builder, resume preview, PDF export, and a career assistance demo page.
 
-## Included
-- Home page
-- Sign up / Login
-- SQLite user database
-- Dashboard
-- Resume builder
-- Resume preview
-- PDF download
-- Career assistant demo modules
-- Responsive HTML/CSS/JavaScript
+## Resume builder
+1. Sign up or log in.
+2. Open **Resume Builder** from the dashboard.
+3. Select one of five designs: Classic Professional, Modern Sidebar, Technical Projects, Elegant Minimal, or Bold Accent.
+4. Enter the person's name, profession/target role, contact details, education, skills, projects, experience, certifications, and languages.
+5. Select **Preview selected template**.
+6. Review the resume and select **Download PDF**.
 
-## Run on Windows
+The preview applies the selected design in the browser. PDF export uses ReportLab and applies the selected design's accent color and a structured resume layout.
 
+## Run locally (Windows)
 1. Install Python 3.
 2. Open this folder in VS Code.
-3. Open Terminal.
-4. Create a virtual environment:
+3. Create and activate a virtual environment:
+   ```bash
+   python -m venv venv
+   venv\Scripts\activate
+   ```
+4. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+5. Run:
+   ```bash
+   python app.py
+   ```
+6. Open http://127.0.0.1:5000
 
-   `python -m venv venv`
+## Deploy on Render
+- Root directory: `profileplus` (if the repository contains this folder)
+- Build command: `pip install -r requirements.txt`
+- Start command: `gunicorn app:app`
+- Set a strong `SECRET_KEY` environment variable. Do not use the development fallback for production.
+- Configure persistent storage/database hosting before relying on SQLite user accounts in production. The local SQLite file may not survive all redeploys or instance replacements.
 
-5. Activate it:
-
-   `venv\Scripts\activate`
-
-6. Install packages:
-
-   `pip install -r requirements.txt`
-
-7. Start the website:
-
-   `python app.py`
-
-8. Open the address shown in the terminal, normally:
-
-   `http://127.0.0.1:5000`
-
-## Next development stages
-
-1. Add resume templates.
-2. Save resume data to SQLite.
-3. Add DOCX export.
-4. Connect a job API.
-5. Connect an AI API for career guidance.
-6. Add skill-gap analysis.
-7. Add interview question database.
-8. Deploy online.
+## Current limitations
+- Resume content is generated from the submitted form; resume details are not currently saved as user-owned records in the database.
+- Career assistance is currently a demo page; no AI API or live job API is integrated.
+- PDF output uses a clean ReportLab layout with a template-specific accent color. The browser preview carries the fuller visual styling.
